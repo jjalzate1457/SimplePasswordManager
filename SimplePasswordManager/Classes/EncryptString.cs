@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace SimplePasswordManager
 {
@@ -133,47 +130,6 @@ namespace SimplePasswordManager
             }
 
             return decryptedBytes;
-        }
-    }
-
-    public class Cipher2
-    {
-        public static string Encrypt(string toEncrypt, string securityKey)
-        {
-            var key = securityKey;
-            var keyArray = Encoding.UTF8.GetBytes(key);
-
-            var tdes = new TripleDESCryptoServiceProvider
-            {
-                Key = keyArray,
-                Mode = CipherMode.ECB,
-                Padding = PaddingMode.PKCS7
-            };
-
-            var cTransform = tdes.CreateEncryptor();
-            var toEncryptArray = Encoding.UTF8.GetBytes(toEncrypt);
-            var resultArray = cTransform.TransformFinalBlock(toEncryptArray, 0, toEncryptArray.Length);
-            tdes.Clear();
-            return Convert.ToBase64String(resultArray, 0, resultArray.Length);
-        }
-
-        public static string Decrypt(string cipherString, string securityKey)
-        {
-            var key = securityKey;
-            var keyArray = Encoding.UTF8.GetBytes(key);
-
-            var tdes = new TripleDESCryptoServiceProvider
-            {
-                Key = keyArray,
-                Mode = CipherMode.ECB,
-                Padding = PaddingMode.PKCS7
-            };
-
-            var cTransform = tdes.CreateDecryptor();
-            var toEncryptArray = Convert.FromBase64String(cipherString);
-            var resultArray = cTransform.TransformFinalBlock(toEncryptArray, 0, toEncryptArray.Length);
-            tdes.Clear();
-            return Encoding.UTF8.GetString(resultArray);
         }
     }
 }

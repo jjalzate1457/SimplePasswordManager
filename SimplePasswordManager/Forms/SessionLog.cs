@@ -40,9 +40,9 @@ namespace SimplePasswordManager
             Log("New Session started.");
         }
 
-        public void Show(IWin32Window owner = null)
+        public void Show()
         {
-            w.Show(owner);
+            w.Show();
         }
 
         public void Log(string log)

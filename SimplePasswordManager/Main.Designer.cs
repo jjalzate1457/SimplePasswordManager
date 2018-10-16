@@ -1,6 +1,6 @@
 ﻿namespace SimplePasswordManager
 {
-    partial class Form1
+    partial class Main
     {
         /// <summary>
         /// Required designer variable.
@@ -60,6 +60,7 @@
             this.resetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.togglePasswordToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.suggestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showLogsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
@@ -255,7 +256,7 @@
             this.btnValidate.TabIndex = 13;
             this.btnValidate.Text = "&Validate";
             this.btnValidate.UseVisualStyleBackColor = true;
-            this.btnValidate.Click += new System.EventHandler(this.validate_Click);
+            this.btnValidate.Click += new System.EventHandler(this.validatePassphrase_Click);
             // 
             // lStatus
             // 
@@ -270,7 +271,6 @@
             this.lStatus.TabIndex = 14;
             this.lStatus.Text = "Ready";
             this.lStatus.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.lStatus.DoubleClick += new System.EventHandler(this.lStatus_DoubleClick);
             // 
             // groupBox1
             // 
@@ -330,7 +330,7 @@
             this.fUsePIN.TabIndex = 13;
             this.fUsePIN.Text = "Use PIN instead";
             this.fUsePIN.UseVisualStyleBackColor = true;
-            this.fUsePIN.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            this.fUsePIN.CheckedChanged += new System.EventHandler(this.fUsePIN_CheckChanged);
             // 
             // groupBox3
             // 
@@ -372,7 +372,7 @@
             this.decryptedToolStripMenuItem});
             this.exportFileToolStripMenuItem.Name = "exportFileToolStripMenuItem";
             this.exportFileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.exportFileToolStripMenuItem.Text = "Export File";
+            this.exportFileToolStripMenuItem.Text = "Export";
             // 
             // encryptedToolStripMenuItem
             // 
@@ -403,7 +403,8 @@
             // editToolStripMenuItem
             // 
             this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.togglePasswordToolStripMenuItem});
+            this.togglePasswordToolStripMenuItem,
+            this.suggestToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.editToolStripMenuItem.Text = "Edit";
@@ -411,9 +412,16 @@
             // togglePasswordToolStripMenuItem
             // 
             this.togglePasswordToolStripMenuItem.Name = "togglePasswordToolStripMenuItem";
-            this.togglePasswordToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.togglePasswordToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
             this.togglePasswordToolStripMenuItem.Text = "Toggle Password";
             this.togglePasswordToolStripMenuItem.Click += new System.EventHandler(this.togglePasswordToolStripMenuItem_Click);
+            // 
+            // suggestToolStripMenuItem
+            // 
+            this.suggestToolStripMenuItem.Name = "suggestToolStripMenuItem";
+            this.suggestToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.suggestToolStripMenuItem.Text = "Suggest Password";
+            this.suggestToolStripMenuItem.Click += new System.EventHandler(this.suggestToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -430,6 +438,7 @@
             this.showLogsToolStripMenuItem.Name = "showLogsToolStripMenuItem";
             this.showLogsToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
             this.showLogsToolStripMenuItem.Text = "Show Logs";
+            this.showLogsToolStripMenuItem.Click += new System.EventHandler(this.showLogsToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
@@ -439,10 +448,11 @@
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.aboutToolStripMenuItem.Text = "About";
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
-            // Form1
+            // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -455,10 +465,10 @@
             this.Controls.Add(this.menuStrip1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.MainMenuStrip = this.menuStrip1;
-            this.Name = "Form1";
+            this.Name = "Main";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Simple Password Manager";
-            this.Load += new System.EventHandler(this.Form1_Load);
+            this.Load += new System.EventHandler(this.Form_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
@@ -510,6 +520,7 @@
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem togglePasswordToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem suggestToolStripMenuItem;
     }
 }
 
