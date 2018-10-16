@@ -40,9 +40,9 @@ namespace SimplePasswordManager
 
         public void Load(string pass)
         {
-            if (File.Exists(Common.Filename))
+            if (File.Exists(Common.Instance.FileExportFilename))
             {
-                var lines = File.ReadAllLines(Common.Filename);
+                var lines = File.ReadAllLines(Common.Instance.FileExportFilename);
 
                 foreach (var line in lines)
                 {
@@ -84,7 +84,7 @@ namespace SimplePasswordManager
                         Cipher.Encrypt(account.Password, pass));
                 }
 
-                File.WriteAllLines(Common.Filename, dataLines);
+                File.WriteAllLines(Common.Instance.FileExportFilename, dataLines);
 
                 return true;
             }
@@ -99,7 +99,7 @@ namespace SimplePasswordManager
             try
             {
                 if (filePath == "")
-                    filePath = Common.Filename;
+                    filePath = Common.Instance.FileExportFilename;
 
                 List<string> dataLines = new List<string>();
 
@@ -126,7 +126,7 @@ namespace SimplePasswordManager
         public void Reset()
         {
             Clear();
-            File.Delete(Common.Filename);
+            File.Delete(Common.Instance.FileExportFilename);
         }
     }
 }

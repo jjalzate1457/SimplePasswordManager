@@ -46,5 +46,76 @@ namespace SimplePasswordManager.Properties {
                 this["iv"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public char PasswordMask {
+            get {
+                return ((char)(this["PasswordMask"]));
+            }
+            set {
+                this["PasswordMask"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int PasswordShowMode {
+            get {
+                return ((int)(this["PasswordShowMode"]));
+            }
+            set {
+                this["PasswordShowMode"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("8")]
+        public int PasswordSuggestLength {
+            get {
+                return ((int)(this["PasswordSuggestLength"]));
+            }
+            set {
+                this["PasswordSuggestLength"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2")]
+        public int PasswordSuggestNonAlpha {
+            get {
+                return ((int)(this["PasswordSuggestNonAlpha"]));
+            }
+            set {
+                this["PasswordSuggestNonAlpha"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string FileExportFilename {
+            get {
+                return ((string)(this["FileExportFilename"]));
+            }
+            set {
+                this["FileExportFilename"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string FileExportDefaultFolder {
+            get {
+                return ((string)(this["FileExportDefaultFolder"]));
+            }
+            set {
+                this["FileExportDefaultFolder"] = value;
+            }
+        }
     }
 }

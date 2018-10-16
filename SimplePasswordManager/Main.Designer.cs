@@ -45,7 +45,6 @@
             this.vUsername = new System.Windows.Forms.Label();
             this.vPassword = new System.Windows.Forms.Label();
             this.btnValidate = new System.Windows.Forms.Button();
-            this.lStatus = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.groupAccountDetails = new System.Windows.Forms.GroupBox();
@@ -65,6 +64,7 @@
             this.showLogsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.statusControl1 = new SimplePasswordManager.StatusControl();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupAccountDetails.SuspendLayout();
@@ -258,20 +258,6 @@
             this.btnValidate.UseVisualStyleBackColor = true;
             this.btnValidate.Click += new System.EventHandler(this.validatePassphrase_Click);
             // 
-            // lStatus
-            // 
-            this.lStatus.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.lStatus.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lStatus.ForeColor = System.Drawing.Color.Blue;
-            this.lStatus.Location = new System.Drawing.Point(6, 9);
-            this.lStatus.Name = "lStatus";
-            this.lStatus.Size = new System.Drawing.Size(358, 22);
-            this.lStatus.TabIndex = 14;
-            this.lStatus.Text = "Ready";
-            this.lStatus.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
             // groupBox1
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -336,7 +322,7 @@
             // 
             this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox3.Controls.Add(this.lStatus);
+            this.groupBox3.Controls.Add(this.statusControl1);
             this.groupBox3.Location = new System.Drawing.Point(188, 255);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(365, 34);
@@ -371,32 +357,32 @@
             this.encryptedToolStripMenuItem,
             this.decryptedToolStripMenuItem});
             this.exportFileToolStripMenuItem.Name = "exportFileToolStripMenuItem";
-            this.exportFileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exportFileToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
             this.exportFileToolStripMenuItem.Text = "Export";
             // 
             // encryptedToolStripMenuItem
             // 
             this.encryptedToolStripMenuItem.Name = "encryptedToolStripMenuItem";
-            this.encryptedToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.encryptedToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
             this.encryptedToolStripMenuItem.Text = "Encrypted";
             this.encryptedToolStripMenuItem.Click += new System.EventHandler(this.encryptedToolStripMenuItem_Click);
             // 
             // decryptedToolStripMenuItem
             // 
             this.decryptedToolStripMenuItem.Name = "decryptedToolStripMenuItem";
-            this.decryptedToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.decryptedToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
             this.decryptedToolStripMenuItem.Text = "Decrypted";
             this.decryptedToolStripMenuItem.Click += new System.EventHandler(this.decryptedToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(104, 6);
             // 
             // resetToolStripMenuItem
             // 
             this.resetToolStripMenuItem.Name = "resetToolStripMenuItem";
-            this.resetToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.resetToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
             this.resetToolStripMenuItem.Text = "Reset";
             this.resetToolStripMenuItem.Click += new System.EventHandler(this.resetToolStripMenuItem_Click);
             // 
@@ -448,9 +434,19 @@
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
+            // 
+            // statusControl1
+            // 
+            this.statusControl1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.statusControl1.BackColor = System.Drawing.Color.White;
+            this.statusControl1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.statusControl1.Location = new System.Drawing.Point(3, 7);
+            this.statusControl1.Name = "statusControl1";
+            this.statusControl1.Size = new System.Drawing.Size(359, 25);
+            this.statusControl1.TabIndex = 0;
             // 
             // Main
             // 
@@ -501,7 +497,6 @@
         private System.Windows.Forms.Label vUsername;
         private System.Windows.Forms.Label vPassword;
         private System.Windows.Forms.Button btnValidate;
-        private System.Windows.Forms.Label lStatus;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupAccountDetails;
@@ -521,6 +516,7 @@
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem togglePasswordToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem suggestToolStripMenuItem;
+        private StatusControl statusControl1;
     }
 }
 

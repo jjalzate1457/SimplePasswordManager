@@ -22,31 +22,30 @@ namespace SimplePasswordManager
                 Properties.Settings.Default.Save();
             }
         }
-
-        SessionLogger logger = null;
+        string pass { get { return fPass.Text.Trim(); } }
 
         AccountList accounts = null;
 
         Timer t = null;
-
-        string pass = "";
 
         int pwordControlsTop = 0;
 
 
         public Main()
         {
+            new AppSettings().Show();
+
             InitializeComponent();
 
             accounts = new AccountList();
 
-            gridAcct.GotFocus += FirstRun_Focus;
+            //gridAcct.GotFocus += Fields_GotFocus;
             fPass.GotFocus += FPass_GotFocus;
-            fName.GotFocus += FirstRun_Focus;
-            fUsername.GotFocus += FirstRun_Focus;
-            fPassword.GotFocus += FirstRun_Focus;
+            fName.GotFocus += Fields_GotFocus;
+            fUsername.GotFocus += Fields_GotFocus;
+            fPassword.GotFocus += Fields_GotFocus;
 
-            fPass.TextChanged += FPass_TextChanged;
+            //fPass.TextChanged += FPass_TextChanged;
             fName.TextChanged += Field_TextChanged;
             fUsername.TextChanged += Field_TextChanged;
             fPassword.TextChanged += Field_TextChanged;
@@ -65,17 +64,16 @@ namespace SimplePasswordManager
 
             FormClosing += Form_FormClosing;
 
-            t = new Timer { Interval = 3000 };
+
 
             pwordControlsTop = lPassword.Top;
-
-            logger = new SessionLogger();
         }
 
         private void Form_Load(object sender, EventArgs e)
         {
+            FirstRun();
             fPass.Focus();
-            logger.Log("Password manager ready.");
+            SessionLogger.Instance.Log("Password manager ready.");
         }
 
         private void Form_FormClosing(object sender, FormClosingEventArgs e)
@@ -86,7 +84,7 @@ namespace SimplePasswordManager
 
             SetStatus("Records saved. Terminating app...");
 
-            logger.Dispose();
+            SessionLogger.Instance.Dispose();
         }
 
 
@@ -116,8 +114,6 @@ namespace SimplePasswordManager
 
         private void validatePassphrase_Click(object sender, EventArgs e)
         {
-            pass = fPass.Text.Trim();
-
             if (EncryptedPassphrase == "")
             {
                 EncryptedPassphrase = Cipher.Encrypt(pass, pass);
@@ -154,7 +150,7 @@ namespace SimplePasswordManager
             {
                 try
                 {
-                    if (Cipher.Decrypt(EncryptedPassphrase, pass) == fPass.Text.Trim())
+                    if (Cipher.Decrypt(EncryptedPassphrase, pass) == pass)
                     {
                         SetStatus("Passphrase is valid.", StatusType.Success);
                         vPass.Text = "✔";
@@ -191,14 +187,14 @@ namespace SimplePasswordManager
                     {
                         SetStatus("Passphrase is invalid.", StatusType.Error);
                         vPass.Text = "!";
-                        vPass.ForeColor = Color.Green;
+                        vPass.ForeColor = Color.Red;
                     }
                 }
                 catch (Exception ex)
                 {
                     SetStatus("Passphrase is invalid.", StatusType.Error);
                     vPass.Text = "!";
-                    vPass.ForeColor = Color.Green;
+                    vPass.ForeColor = Color.Red;
                 }
             }
         }
@@ -226,6 +222,11 @@ namespace SimplePasswordManager
 
 
         #region Account Fields
+        private void Fields_GotFocus(object sender, EventArgs e)
+        {
+
+        }
+
         private void Field_TextChanged(object sender, EventArgs e)
         {
             var control = sender as TextBox;
@@ -297,11 +298,11 @@ namespace SimplePasswordManager
         private void btnSave_Click(object sender, EventArgs e)
         {
             if (fName.Text == "")
-                SetStatus("Name is required. Cannot save account.", StatusType.Error, false, false);
+                SetStatus("Name is required. Cannot save account.", StatusType.Error, false);
             if (!fUsePIN.Checked && fName.Text == "")
-                SetStatus("Username is required. Cannot save account.", StatusType.Error, false, false);
+                SetStatus("Username is required. Cannot save account.", StatusType.Error, false);
             if (fPassword.Text == "")
-                SetStatus(fUsePIN.Checked ? "PIN" : "Password" + " is required. Cannot save account.", StatusType.Error, false, false);
+                SetStatus(fUsePIN.Checked ? "PIN" : "Password" + " is required. Cannot save account.", StatusType.Error, false);
 
             if (gridAcct.SelectedIndex == -1)
             {
@@ -380,7 +381,7 @@ namespace SimplePasswordManager
 
         private void togglePasswordToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            fPassword.PasswordChar = fPassword.PasswordChar == '⚫' ? '\0' : '⚫';
+            fPassword.PasswordChar = fPassword.PasswordChar == Common.Instance.PasswordChar ? '\0' : Common.Instance.PasswordChar;
         }
 
         private void suggestToolStripMenuItem_Click(object sender, EventArgs e)
@@ -389,12 +390,16 @@ namespace SimplePasswordManager
 
             if (generateFor != null)
             {
-                generateFor.Text = System.Web.Security.Membership.GeneratePassword(10, 2);
+                generateFor.Text = System.Web.Security.Membership.GeneratePassword(
+                    fUsePIN.Checked ? 4 : 10,
+                     fUsePIN.Checked ? 0 : 2
+                );
+
                 generateFor.PasswordChar = '\0';
 
                 t.Tick += (o, ee) =>
                 {
-                    generateFor.PasswordChar = '⚫';
+                    generateFor.PasswordChar = Common.Instance.PasswordChar;
 
                     t.Stop();
                 };
@@ -406,7 +411,7 @@ namespace SimplePasswordManager
 
         private void showLogsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            logger.Show();
+            SessionLogger.Instance.Show();
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -419,6 +424,14 @@ namespace SimplePasswordManager
 
 
         #region Other Methods
+        private void SetStatus(string message, StatusType type = StatusType.Info, bool expires = true, string customLog = "")
+        {
+            statusControl1.SetStatus(message, type, expires);
+
+            if (customLog != "")
+                SessionLogger.Instance.Log(message);
+        }
+
         private bool CheckFieldValue(string field, string value)
         {
             Account current = accounts.Current;
@@ -436,37 +449,25 @@ namespace SimplePasswordManager
             return true;
         }
 
-        private void FirstRun_Focus(object sender, EventArgs e)
-        {
-            FirstRun();
-        }
-
-        private void FirstRun(object sender = null)
+        private void FirstRun()
         {
             if (fPass.Text.Length == 0)
             {
-                if (sender != null && ((sender as TextBox) != fPass))
-                    fPass.Focus();
+                fPass.Focus();
 
                 fPass.Enabled = true;
-
-                vPass.Visible = true;
-
-                Activate();
 
                 groupAccountDetails.Enabled = false;
                 gridAcct.Enabled = false;
 
                 if (EncryptedPassphrase == "")
                 {
-                    SetStatus("Please enter a new passphrase", StatusType.Info, false, false);
-                    logger.Log("First Run. Waiting for passphrase...");
+                    SetStatus("Please enter a new passphrase", StatusType.Info, false, "First Run. Waiting for passphrase...");
                     btnValidate.Text = "Save";
                 }
                 else
                 {
-                    SetStatus("Please enter your passphrase", StatusType.Info, false, false);
-                    logger.Log("Waiting for passphrase...");
+                    SetStatus("Please enter your passphrase", StatusType.Info, false, "Waiting for passphrase...");
                 }
             }
         }
@@ -486,46 +487,17 @@ namespace SimplePasswordManager
 
             SetStatus("Data has been reset.");
 
-            FirstRun(fUsername);
-        }
-
-        private void SetStatus(string message, StatusType type = StatusType.Info, bool timer = true, bool log = true)
-        {
-            switch (type)
-            {
-                case StatusType.Info:
-                    lStatus.ForeColor = Color.Blue;
-                    break;
-                case StatusType.Success:
-                    lStatus.ForeColor = Color.Green;
-                    break;
-                case StatusType.Error:
-                    lStatus.ForeColor = Color.Red;
-                    break;
-            }
-
-            lStatus.Text = message;
-
-            if (log)
-                logger.Log(message);
-
-            if (timer)
-            {
-                t.Tick += (o, e) => { SetStatus("Ready.", StatusType.Info, false, false); };
-                t.Start();
-            }
-            else
-                t.Stop();
+            FirstRun();
         }
 
         private void ExportFile(bool encrypted)
         {
             using (SaveFileDialog sv = new SaveFileDialog())
             {
-                sv.DefaultExt = "csv";
-                sv.Filter = "Comma Delimited (*.csv)|*.csv";
+                sv.DefaultExt = "spm";
+                sv.Filter = "Simple Password Manager File (*.spm)|*.spm";
                 sv.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                sv.FileName = Common.Filename.Split('.')[0];
+                sv.FileName = Common.Instance.FileExportFilename.Split('.')[0];
                 if (sv.ShowDialog() == DialogResult.OK)
                 {
                     accounts.SaveExport(EncryptedPassphrase, sv.FileName, encrypted);
@@ -533,12 +505,5 @@ namespace SimplePasswordManager
             }
         }
         #endregion
-    }
-
-    enum StatusType
-    {
-        Info,
-        Success,
-        Error
     }
 }

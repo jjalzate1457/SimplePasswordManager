@@ -27,6 +27,17 @@ namespace SimplePasswordManager
 
     public class SessionLogger : IDisposable
     {
+        static SessionLogger _instance { get; set; }
+        public static SessionLogger Instance
+        {
+            get
+            {
+                if (_instance == null)
+                    _instance = new SessionLogger();
+                return _instance;
+            }
+        }
+
         List<string> logs;
 
         SessionLog w;
