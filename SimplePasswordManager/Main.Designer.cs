@@ -50,7 +50,7 @@
             this.groupAccountDetails = new System.Windows.Forms.GroupBox();
             this.fUsePIN = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.statusControl1 = new SimplePasswordManager.StatusControl();
+            this.statusControl = new SimplePasswordManager.StatusControl();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -323,7 +323,7 @@
             // 
             this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox3.Controls.Add(this.statusControl1);
+            this.groupBox3.Controls.Add(this.statusControl);
             this.groupBox3.Location = new System.Drawing.Point(188, 255);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(365, 34);
@@ -332,13 +332,13 @@
             // 
             // statusControl1
             // 
-            this.statusControl1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.statusControl1.BackColor = System.Drawing.Color.White;
-            this.statusControl1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.statusControl1.Location = new System.Drawing.Point(3, 7);
-            this.statusControl1.Name = "statusControl1";
-            this.statusControl1.Size = new System.Drawing.Size(359, 25);
-            this.statusControl1.TabIndex = 0;
+            this.statusControl.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.statusControl.BackColor = System.Drawing.Color.White;
+            this.statusControl.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.statusControl.Location = new System.Drawing.Point(3, 7);
+            this.statusControl.Name = "statusControl1";
+            this.statusControl.Size = new System.Drawing.Size(359, 25);
+            this.statusControl.TabIndex = 0;
             // 
             // menuStrip1
             // 
@@ -525,7 +525,7 @@
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem togglePasswordToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem suggestToolStripMenuItem;
-        private StatusControl statusControl1;
+        private StatusControl statusControl;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
     }
 }

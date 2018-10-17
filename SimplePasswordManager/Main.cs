@@ -73,6 +73,7 @@ namespace SimplePasswordManager
         {
             FirstRun();
             fPass.Focus();
+            ReflectSettings();
             SessionLogger.Instance.Log("Password manager ready.");
         }
 
@@ -350,8 +351,13 @@ namespace SimplePasswordManager
             }
             else
             {
-                accounts.Remove(gridAcct.SelectedItem as Account);
-                SetStatus("Successfully removed record.", StatusType.Success);
+                if (MessageBox.Show("Are you sure you want to remove this account?",
+                    "You are about to delete an account",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                {
+                    accounts.Remove(gridAcct.SelectedItem as Account);
+                    SetStatus("Successfully removed record.", StatusType.Success);
+                }
             }
         }
         #endregion Account Actions
@@ -370,32 +376,7 @@ namespace SimplePasswordManager
         }
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (settings == null)
-            {
-                settings = new AppSettings();
-                settings.OnSettingsChanged += (o, ee) =>
-                {
-                    if (o is ComboBox)
-                    {
-                        if ((o as ComboBox).Name.ToLower().Contains("mask"))
-                        {
-                            var a = (o as ComboBox).SelectedItem;
-
-                            fPass.PasswordChar = (char)a;
-                            fPassword.PasswordChar = (char)a;
-                        }
-                        if ((o as ComboBox).Name.ToLower().Contains("showmode"))
-                        {
-                            var a = (o as ComboBox).SelectedItem.ToString();
-
-                            if (a == "Toggle")
-                                togglePasswordToolStripMenuItem.Text = "Toggle Password";
-                            else
-                                togglePasswordToolStripMenuItem.Text = "Show password for " + a;
-                        }
-                    }
-                };
-            }
+            ReflectSettings();
 
             settings.Show();
         }
@@ -474,26 +455,44 @@ namespace SimplePasswordManager
 
 
         #region Other Methods
+        private void ReflectSettings()
+        {
+            if (settings == null)
+            {
+                settings = new AppSettings();
+                settings.OnSettingsChanged += (o, ee) =>
+                {
+                    // password mask
+                    fPass.PasswordChar = Common.Instance.PasswordChar;
+                    fPassword.PasswordChar = Common.Instance.PasswordChar;
+
+                    // password show
+                    if (Common.Instance.PasswordShowMode == "Toggle")
+                        togglePasswordToolStripMenuItem.Text = "Toggle Password";
+                    else
+                        togglePasswordToolStripMenuItem.Text = "Show password for " + Common.Instance.PasswordShowMode;
+                };
+            }
+        }
+
         private void SetStatus(string message, StatusType type = StatusType.Info, bool expires = true, string customLog = "")
         {
-            statusControl1.SetStatus(message, type, expires);
+            statusControl.SetStatus(message, type, expires);
 
             if (customLog != "")
-                SessionLogger.Instance.Log(message);
+                SessionLogger.Instance.Log(customLog);
         }
 
         private bool CheckFieldValue(string field, string value)
         {
-            Account current = accounts.Current;
-
-            if (current != null)
+            if (accounts.Current != null)
             {
                 if (field == "fName")
-                    return current.Name == value;
+                    return accounts.Current.Name == value;
                 else if (field == "fUsername")
-                    return current.Username == value;
+                    return accounts.Current.Username == value;
                 else if (field == "fPassword")
-                    return current.Password == value;
+                    return accounts.Current.Password == value;
             }
 
             return true;
