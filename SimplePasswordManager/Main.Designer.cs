@@ -50,6 +50,7 @@
             this.groupAccountDetails = new System.Windows.Forms.GroupBox();
             this.fUsePIN = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.statusControl1 = new SimplePasswordManager.StatusControl();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -64,7 +65,7 @@
             this.showLogsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.statusControl1 = new SimplePasswordManager.StatusControl();
+            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupAccountDetails.SuspendLayout();
@@ -329,6 +330,16 @@
             this.groupBox3.TabIndex = 18;
             this.groupBox3.TabStop = false;
             // 
+            // statusControl1
+            // 
+            this.statusControl1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.statusControl1.BackColor = System.Drawing.Color.White;
+            this.statusControl1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.statusControl1.Location = new System.Drawing.Point(3, 7);
+            this.statusControl1.Name = "statusControl1";
+            this.statusControl1.Size = new System.Drawing.Size(359, 25);
+            this.statusControl1.TabIndex = 0;
+            // 
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -346,6 +357,7 @@
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.exportFileToolStripMenuItem,
             this.toolStripSeparator1,
+            this.settingsToolStripMenuItem,
             this.resetToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
@@ -357,7 +369,7 @@
             this.encryptedToolStripMenuItem,
             this.decryptedToolStripMenuItem});
             this.exportFileToolStripMenuItem.Name = "exportFileToolStripMenuItem";
-            this.exportFileToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.exportFileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.exportFileToolStripMenuItem.Text = "Export";
             // 
             // encryptedToolStripMenuItem
@@ -377,12 +389,12 @@
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(104, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
             // 
             // resetToolStripMenuItem
             // 
             this.resetToolStripMenuItem.Name = "resetToolStripMenuItem";
-            this.resetToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.resetToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.resetToolStripMenuItem.Text = "Reset";
             this.resetToolStripMenuItem.Click += new System.EventHandler(this.resetToolStripMenuItem_Click);
             // 
@@ -398,14 +410,14 @@
             // togglePasswordToolStripMenuItem
             // 
             this.togglePasswordToolStripMenuItem.Name = "togglePasswordToolStripMenuItem";
-            this.togglePasswordToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.togglePasswordToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.togglePasswordToolStripMenuItem.Text = "Toggle Password";
             this.togglePasswordToolStripMenuItem.Click += new System.EventHandler(this.togglePasswordToolStripMenuItem_Click);
             // 
             // suggestToolStripMenuItem
             // 
             this.suggestToolStripMenuItem.Name = "suggestToolStripMenuItem";
-            this.suggestToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.suggestToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.suggestToolStripMenuItem.Text = "Suggest Password";
             this.suggestToolStripMenuItem.Click += new System.EventHandler(this.suggestToolStripMenuItem_Click);
             // 
@@ -438,15 +450,12 @@
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
-            // statusControl1
+            // settingsToolStripMenuItem
             // 
-            this.statusControl1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.statusControl1.BackColor = System.Drawing.Color.White;
-            this.statusControl1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.statusControl1.Location = new System.Drawing.Point(3, 7);
-            this.statusControl1.Name = "statusControl1";
-            this.statusControl1.Size = new System.Drawing.Size(359, 25);
-            this.statusControl1.TabIndex = 0;
+            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.settingsToolStripMenuItem.Text = "Settings";
+            this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
             // Main
             // 
@@ -517,6 +526,7 @@
         private System.Windows.Forms.ToolStripMenuItem togglePasswordToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem suggestToolStripMenuItem;
         private StatusControl statusControl1;
+        private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
     }
 }
 

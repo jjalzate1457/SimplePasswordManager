@@ -14,6 +14,8 @@ namespace SimplePasswordManager
     {
         Common Common { get; set; }
 
+        public event EventHandler OnSettingsChanged;
+
         List<char> passwordCharItems;
         List<string> passwordShowModeItems;
 
@@ -25,7 +27,6 @@ namespace SimplePasswordManager
 
         private void AppSettings_Load(object sender, EventArgs e)
         {
-
             fPasswordLength.Items.Clear();
             fNonAlpha.Items.Clear();
 
@@ -44,10 +45,12 @@ namespace SimplePasswordManager
             passwordShowModeItems = new List<string> {"3 sec", "5 sec", "Toggle" };
             fPasswordShowMode.DataSource = passwordShowModeItems;
             fPasswordShowMode.SelectedItem = passwordShowModeItems.Find(i => i == Common.PasswordShowMode);
+            fPasswordShowMode.SelectedIndexChanged += new EventHandler(fPasswordShowMode_SelectedIndexChanged);
 
-            passwordCharItems = new List<char> { '●', '*', '-', '#' };
+            passwordCharItems = new List<char> { '⚫', '*', '-', '#' };
             fPasswordMask.DataSource = passwordCharItems;
             fPasswordMask.SelectedItem = passwordCharItems.Find(i => i == Common.PasswordChar);
+            fPasswordMask.SelectedIndexChanged += new EventHandler(fPwordMask_SelectedIndexChanged);
         }
 
         private void SetStatus(string message, StatusType type = StatusType.Info, bool expires = true, string customLog = "")
@@ -73,23 +76,43 @@ namespace SimplePasswordManager
             }
 
             Common.PasswordSuggestLength = fPasswordLength.SelectedIndex + 1;
+
+            OnSettingsChanged?.Invoke(sender, e);
+
+            SetStatus("Suggested Password Length is set " + (fPasswordLength.SelectedIndex + 1) + ".");
         }
 
         private void fNonAlpha_SelectedIndexChanged(object sender, EventArgs e)
         {
             Common.PasswordSuggestNonAlpha = fNonAlpha.SelectedIndex + 1;
+
+            OnSettingsChanged?.Invoke(sender, e);
+
+            SetStatus("Number of Non-Alphanumeric Chracters in suggested password is limited to " + (fNonAlpha.SelectedIndex + 1) + " characters.");
         }
 
         private void fPwordMask_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (fPasswordMask.SelectedIndex != -1)
+            {
                 Common.PasswordChar = passwordCharItems[fPasswordMask.SelectedIndex];
+
+                OnSettingsChanged?.Invoke(sender, e);
+
+                SetStatus("Password mask character is set to '" + passwordCharItems[fPasswordMask.SelectedIndex] + "'.");
+            }
         }
 
         private void fPasswordShowMode_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (fPasswordShowMode.SelectedIndex != -1)
+            {
                 Common.PasswordShowMode = passwordShowModeItems[fPasswordShowMode.SelectedIndex];
+
+                OnSettingsChanged?.Invoke(sender, e);
+
+                SetStatus("Password show duration is set to \"" + passwordShowModeItems[fPasswordShowMode.SelectedIndex] + "\".");
+            }
         }
 
         private void fFilename_TextChanged(object sender, EventArgs e)

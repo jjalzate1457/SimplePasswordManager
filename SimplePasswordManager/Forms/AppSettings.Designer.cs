@@ -123,17 +123,15 @@ namespace SimplePasswordManager
             this.fPasswordMask.Name = "fPasswordMask";
             this.fPasswordMask.Size = new System.Drawing.Size(125, 21);
             this.fPasswordMask.TabIndex = 9;
-            this.fPasswordMask.SelectedIndexChanged += new System.EventHandler(this.fPwordMask_SelectedIndexChanged);
             // 
-            // fPassShowMode
+            // fPasswordShowMode
             // 
             this.fPasswordShowMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.fPasswordShowMode.FormattingEnabled = true;
             this.fPasswordShowMode.Location = new System.Drawing.Point(220, 57);
-            this.fPasswordShowMode.Name = "fPassShowMode";
+            this.fPasswordShowMode.Name = "fPasswordShowMode";
             this.fPasswordShowMode.Size = new System.Drawing.Size(125, 21);
             this.fPasswordShowMode.TabIndex = 11;
-            this.fPasswordShowMode.SelectedIndexChanged += new System.EventHandler(this.fPasswordShowMode_SelectedIndexChanged);
             // 
             // label7
             // 

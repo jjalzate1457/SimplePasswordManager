@@ -58,9 +58,6 @@ namespace SimplePasswordManager
         {
             get
             {
-                if (Properties.Settings.Default.PasswordShowMode == 0)
-                    Properties.Settings.Default.PasswordShowMode = 3000;
-
                 return
                     Properties.Settings.Default.PasswordShowMode == 0 ?
                     "Toggle" :
@@ -72,6 +69,11 @@ namespace SimplePasswordManager
                     (value == "Toggle" ? 0 : Convert.ToInt16(value.Replace("sec", "").Trim())) * 1000;
                 Properties.Settings.Default.Save();
             }
+        }
+
+        public int PasswordShowModeDuration
+        {
+            get { return Properties.Settings.Default.PasswordShowMode; }
         }
 
         /// <summary>

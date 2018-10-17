@@ -24,6 +24,8 @@ namespace SimplePasswordManager
         }
         string pass { get { return fPass.Text.Trim(); } }
 
+        AppSettings settings;
+
         AccountList accounts = null;
 
         Timer t = null;
@@ -33,8 +35,6 @@ namespace SimplePasswordManager
 
         public Main()
         {
-            new AppSettings().Show();
-
             InitializeComponent();
 
             accounts = new AccountList();
@@ -64,9 +64,9 @@ namespace SimplePasswordManager
 
             FormClosing += Form_FormClosing;
 
-
-
             pwordControlsTop = lPassword.Top;
+
+            t = new Timer();
         }
 
         private void Form_Load(object sender, EventArgs e)
@@ -368,6 +368,37 @@ namespace SimplePasswordManager
         {
             ExportFile(false);
         }
+        private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (settings == null)
+            {
+                settings = new AppSettings();
+                settings.OnSettingsChanged += (o, ee) =>
+                {
+                    if (o is ComboBox)
+                    {
+                        if ((o as ComboBox).Name.ToLower().Contains("mask"))
+                        {
+                            var a = (o as ComboBox).SelectedItem;
+
+                            fPass.PasswordChar = (char)a;
+                            fPassword.PasswordChar = (char)a;
+                        }
+                        if ((o as ComboBox).Name.ToLower().Contains("showmode"))
+                        {
+                            var a = (o as ComboBox).SelectedItem.ToString();
+
+                            if (a == "Toggle")
+                                togglePasswordToolStripMenuItem.Text = "Toggle Password";
+                            else
+                                togglePasswordToolStripMenuItem.Text = "Show password for " + a;
+                        }
+                    }
+                };
+            }
+
+            settings.Show();
+        }
 
         private void resetToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -381,7 +412,25 @@ namespace SimplePasswordManager
 
         private void togglePasswordToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            fPassword.PasswordChar = fPassword.PasswordChar == Common.Instance.PasswordChar ? '\0' : Common.Instance.PasswordChar;
+            if (Common.Instance.PasswordShowMode == "Toggle")
+            {
+                fPassword.PasswordChar = fPassword.PasswordChar == Common.Instance.PasswordChar ? '\0' : Common.Instance.PasswordChar;
+            }
+            else
+            {
+                if (fPassword.PasswordChar != '\0')
+                    fPassword.PasswordChar = '\0';
+
+                t.Interval = Common.Instance.PasswordShowModeDuration;
+
+                t.Tick += (o, ee) =>
+                {
+                    fPassword.PasswordChar = Common.Instance.PasswordChar;
+                    t.Stop();
+                };
+
+                t.Start();
+            }
         }
 
         private void suggestToolStripMenuItem_Click(object sender, EventArgs e)
@@ -396,6 +445,8 @@ namespace SimplePasswordManager
                 );
 
                 generateFor.PasswordChar = '\0';
+
+                t.Interval = 3000;
 
                 t.Tick += (o, ee) =>
                 {
@@ -419,7 +470,6 @@ namespace SimplePasswordManager
 
         }
         #endregion Menu Items
-
 
 
 
@@ -505,5 +555,7 @@ namespace SimplePasswordManager
             }
         }
         #endregion
+
+
     }
 }
