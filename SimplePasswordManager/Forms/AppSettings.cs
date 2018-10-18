@@ -22,7 +22,6 @@ namespace SimplePasswordManager
         public AppSettings()
         {
             InitializeComponent();
-            Common = Common.Instance;
         }
 
         private void AppSettings_Load(object sender, EventArgs e)
@@ -42,7 +41,7 @@ namespace SimplePasswordManager
             fPasswordLength.SelectedIndexChanged += new EventHandler(fPasswordLength_SelectedIndexChanged);
             fNonAlpha.SelectedIndexChanged += new EventHandler(fNonAlpha_SelectedIndexChanged);
 
-            passwordShowModeItems = new List<string> {"3 sec", "5 sec", "Toggle" };
+            passwordShowModeItems = new List<string> {"3 secs", "5 secs", "Toggle" };
             fPasswordShowMode.DataSource = passwordShowModeItems;
             fPasswordShowMode.SelectedItem = passwordShowModeItems.Find(i => i == Common.PasswordShowMode);
             fPasswordShowMode.SelectedIndexChanged += new EventHandler(fPasswordShowMode_SelectedIndexChanged);

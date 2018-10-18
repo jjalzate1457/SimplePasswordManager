@@ -6,7 +6,7 @@ using System.IO;
 
 namespace SimplePasswordManager
 {
-    public class Account
+    public class Account : IComparable<Account>
     {
         public Guid Id { get; set; }
         public AccountType AccountType { get; set; }
@@ -26,6 +26,17 @@ namespace SimplePasswordManager
             Username = acct.Username;
             Password = acct.Password;
         }
+
+        public int CompareTo(Account other)
+        {
+            if (Id != other.Id ||
+            Name != other.Name ||
+            Username != other.Username ||
+            Password != other.Password)
+                return 0;
+
+            return 1;
+        }
     }
 
     public enum AccountType
@@ -40,9 +51,9 @@ namespace SimplePasswordManager
 
         public void Load(string pass)
         {
-            if (File.Exists(Common.Instance.FileExportFilename))
+            if (File.Exists(Common.FileExportFilename))
             {
-                var lines = File.ReadAllLines(Common.Instance.FileExportFilename);
+                var lines = File.ReadAllLines(Common.FileExportFilename);
 
                 foreach (var line in lines)
                 {
@@ -84,7 +95,7 @@ namespace SimplePasswordManager
                         Cipher.Encrypt(account.Password, pass));
                 }
 
-                File.WriteAllLines(Common.Instance.FileExportFilename, dataLines);
+                File.WriteAllLines(Common.FileExportFilename, dataLines);
 
                 return true;
             }
@@ -99,7 +110,7 @@ namespace SimplePasswordManager
             try
             {
                 if (filePath == "")
-                    filePath = Common.Instance.FileExportFilename;
+                    filePath = Common.FileExportFilename;
 
                 List<string> dataLines = new List<string>();
 
@@ -126,7 +137,7 @@ namespace SimplePasswordManager
         public void Reset()
         {
             Clear();
-            File.Delete(Common.Instance.FileExportFilename);
+            File.Delete(Common.FileExportFilename);
         }
     }
 }

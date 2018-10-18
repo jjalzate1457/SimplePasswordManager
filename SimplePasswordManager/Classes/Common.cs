@@ -5,22 +5,30 @@ namespace SimplePasswordManager
 {
     public class Common
     {
-        static Common _instance;
-        public static Common Instance
+        public static string IV
         {
-            get
+            get { return Properties.Settings.Default.iv; }
+            set
             {
-                if (_instance == null)
-                    _instance = new Common();
+                Properties.Settings.Default.iv = value;
+                Properties.Settings.Default.Save();
+            }
+        }
 
-                return _instance;
+        public static string EncryptedPassphrase
+        {
+            get { return Properties.Settings.Default.pass; }
+            set
+            {
+                Properties.Settings.Default.pass = value;
+                Properties.Settings.Default.Save();
             }
         }
 
         /// <summary>
         /// The default filename of the file where all the encrypted accounts data are saved
         /// </summary>
-        public string FileExportFilename
+        public static string FileExportFilename
         {
             get
             {
@@ -36,7 +44,7 @@ namespace SimplePasswordManager
             }
         }
 
-        public string FileExportDefaultFolder
+        public static string FileExportDefaultFolder
         {
             get
             {
@@ -54,24 +62,24 @@ namespace SimplePasswordManager
         }
 
 
-        public string PasswordShowMode
+        public static string PasswordShowMode
         {
             get
             {
                 return
                     Properties.Settings.Default.PasswordShowMode == 0 ?
                     "Toggle" :
-                    (Properties.Settings.Default.PasswordShowMode / 1000 + " sec");
+                    (Properties.Settings.Default.PasswordShowMode / 1000 + " secs");
             }
             set
             {
                 Properties.Settings.Default.PasswordShowMode =
-                    (value == "Toggle" ? 0 : Convert.ToInt16(value.Replace("sec", "").Trim())) * 1000;
+                    (value == "Toggle" ? 0 : Convert.ToInt16(value.Replace("secs", "").Trim())) * 1000;
                 Properties.Settings.Default.Save();
             }
         }
 
-        public int PasswordShowModeDuration
+        public static int PasswordShowModeDuration
         {
             get { return Properties.Settings.Default.PasswordShowMode; }
         }
@@ -79,7 +87,7 @@ namespace SimplePasswordManager
         /// <summary>
         /// Display character for password/PIN and passphrase fields
         /// </summary>
-        public char PasswordChar
+        public static char PasswordChar
         {
             get
             {
@@ -95,7 +103,7 @@ namespace SimplePasswordManager
             }
         }
 
-        public int PasswordSuggestLength
+        public static int PasswordSuggestLength
         {
             get
             {
@@ -111,7 +119,7 @@ namespace SimplePasswordManager
             }
         }
 
-        public int PasswordSuggestNonAlpha
+        public static int PasswordSuggestNonAlpha
         {
             get
             {
@@ -125,6 +133,17 @@ namespace SimplePasswordManager
                 Properties.Settings.Default.PasswordSuggestNonAlpha = value;
                 Properties.Settings.Default.Save();
             }
+        }
+
+        public static void Reset()
+        {
+            IV = Guid.NewGuid().ToString().Replace("-", "").Substring(0, 16);
+            EncryptedPassphrase = "";
+
+            PasswordChar = '⚫';
+            PasswordShowMode = "3 secs";
+            PasswordSuggestLength = 8;
+            PasswordSuggestNonAlpha = 2;
         }
     }
 }

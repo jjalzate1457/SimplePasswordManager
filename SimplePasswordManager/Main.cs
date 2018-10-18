@@ -13,16 +13,7 @@ namespace SimplePasswordManager
 {
     public partial class Main : Form
     {
-        string EncryptedPassphrase
-        {
-            get { return Properties.Settings.Default.pass; }
-            set
-            {
-                Properties.Settings.Default.pass = value;
-                Properties.Settings.Default.Save();
-            }
-        }
-        string pass { get { return fPass.Text.Trim(); } }
+        string fPassText { get { return fPass.Text.Trim(); } }
 
         AppSettings settings;
 
@@ -40,10 +31,10 @@ namespace SimplePasswordManager
             accounts = new AccountList();
 
             //gridAcct.GotFocus += Fields_GotFocus;
-            fPass.GotFocus += FPass_GotFocus;
-            fName.GotFocus += Fields_GotFocus;
-            fUsername.GotFocus += Fields_GotFocus;
-            fPassword.GotFocus += Fields_GotFocus;
+            //fPass.GotFocus += FPass_GotFocus;
+            //fName.GotFocus += Fields_GotFocus;
+            //fUsername.GotFocus += Fields_GotFocus;
+            //fPassword.GotFocus += Fields_GotFocus;
 
             //fPass.TextChanged += FPass_TextChanged;
             fName.TextChanged += Field_TextChanged;
@@ -59,12 +50,12 @@ namespace SimplePasswordManager
             gridAcct.DataSource = accounts;
             gridAcct.DisplayMember = "Name";
 
-            exportFileToolStripMenuItem.Enabled = false;
-            editToolStripMenuItem.Enabled = false;
-
             FormClosing += Form_FormClosing;
 
             pwordControlsTop = lPassword.Top;
+
+            settings = new AppSettings();
+            settings.OnSettingsChanged += (o, ee) => { ReflectSettings(); };
 
             t = new Timer();
         }
@@ -72,16 +63,19 @@ namespace SimplePasswordManager
         private void Form_Load(object sender, EventArgs e)
         {
             FirstRun();
+
             fPass.Focus();
-            ReflectSettings();
+
             SessionLogger.Instance.Log("Password manager ready.");
         }
 
         private void Form_FormClosing(object sender, FormClosingEventArgs e)
         {
+            UIConfig("lock");
+
             SetStatus("Saving current records...");
 
-            accounts.Save(EncryptedPassphrase);
+            accounts.Save(Common.EncryptedPassphrase);
 
             SetStatus("Records saved. Terminating app...");
 
@@ -90,12 +84,7 @@ namespace SimplePasswordManager
 
 
 
-        #region Passphrase 
-        private void FPass_GotFocus(object sender, EventArgs e)
-        {
-
-        }
-
+        #region Passphrase
         private void FPass_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
@@ -106,96 +95,60 @@ namespace SimplePasswordManager
 
         private void FPass_TextChanged(object sender, EventArgs e)
         {
-            if (fPass.Text.Length == 0)
-            {
-                vPass.Text = "!";
-                vPass.ForeColor = Color.Red;
-            }
+            SetTextBoxStatus(sender as TextBox, fPassText == "" ? TextBoxState.Invalid : TextBoxState.Valid);
         }
 
         private void validatePassphrase_Click(object sender, EventArgs e)
         {
-            if (EncryptedPassphrase == "")
+            if (Common.EncryptedPassphrase == "")
             {
-                EncryptedPassphrase = Cipher.Encrypt(pass, pass);
-
-                Properties.Settings.Default.Save();
+                Common.EncryptedPassphrase = Cipher.Encrypt(fPassText, fPassText);
 
                 btnValidate.Text = "Validate";
-                btnValidate.Enabled = false;
 
-                fPass.Enabled = false;
-
-                fName.Focus();
-
-                vPass.Text = "✔";
-                vPass.ForeColor = Color.Green;
+                SetTextBoxStatus(fPass, TextBoxState.Valid);
 
                 SetStatus("New passphrase saved.", StatusType.Success);
 
-                groupAccountDetails.Enabled = true;
-                gridAcct.Enabled = true;
+                UIConfig("valid");
 
                 MessageBox.Show(
-                    "Please remember your passphrase. Use it everytime you want to access all your accounts ",
+                    "Please remember your passphrase. Use it everytime you want to access all your accounts. " +
+                    "Losing your passphrase means all your accounts are forever encrypted.",
                     "Passphrase is saved",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information
                 );
-
-                exportFileToolStripMenuItem.Enabled = true;
-                editToolStripMenuItem.Enabled = true;
-
             }
             else
             {
                 try
                 {
-                    if (Cipher.Decrypt(EncryptedPassphrase, pass) == pass)
+                    if (Cipher.Decrypt(Common.EncryptedPassphrase, fPassText) == fPassText)
                     {
                         SetStatus("Passphrase is valid.", StatusType.Success);
-                        vPass.Text = "✔";
-                        vPass.ForeColor = Color.Green;
 
-                        groupAccountDetails.Enabled = true;
-                        gridAcct.Enabled = true;
-
-                        btnValidate.Enabled = false;
-
-                        fPass.Enabled = false;
-
-                        if (gridAcct.Items.Count > 0)
-                        {
-                            gridAcct.SelectedIndex = 0;
-                            gridAcct.SelectedItem = accounts[0];
-                            gridAcct.Focus();
-                        }
-                        else
-                        {
-                            fName.Focus();
-                        }
+                        SetTextBoxStatus(fPass, TextBoxState.Valid);
 
                         SetStatus("Loading records...");
 
-                        accounts.Load(EncryptedPassphrase);
+                        accounts.Load(Common.EncryptedPassphrase);
 
                         SetStatus("Loaded " + accounts.Count + " accounts.");
 
-                        exportFileToolStripMenuItem.Enabled = true;
-                        editToolStripMenuItem.Enabled = true;
+                        UIConfig("valid");
                     }
                     else
                     {
                         SetStatus("Passphrase is invalid.", StatusType.Error);
-                        vPass.Text = "!";
-                        vPass.ForeColor = Color.Red;
+                        SetTextBoxStatus(fPass, TextBoxState.Invalid);
+
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     SetStatus("Passphrase is invalid.", StatusType.Error);
-                    vPass.Text = "!";
-                    vPass.ForeColor = Color.Red;
+                    SetTextBoxStatus(fPass, TextBoxState.Invalid);
                 }
             }
         }
@@ -223,38 +176,19 @@ namespace SimplePasswordManager
 
 
         #region Account Fields
-        private void Fields_GotFocus(object sender, EventArgs e)
-        {
-
-        }
-
         private void Field_TextChanged(object sender, EventArgs e)
         {
-            var control = sender as TextBox;
-            var controlName = (sender as Control).Name;
-            var validationControl = Controls.Find(controlName.Replace('f', 'v'), true);
+            OnTextChanged(sender as TextBox);
+        }
 
-            if (validationControl != null && validationControl.Length > 0)
-            {
-                if ((sender as TextBox).Text.Length != 0)
-                {
-                    if (CheckFieldValue(controlName, control.Text))
-                    {
-                        (validationControl[0] as Label).Text = "✔";
-                        (validationControl[0] as Label).ForeColor = Color.Green;
-                    }
-                    else
-                    {
-                        (validationControl[0] as Label).Text = "🖉";
-                        (validationControl[0] as Label).ForeColor = Color.Orange;
-                    }
-                }
-                else
-                {
-                    (validationControl[0] as Label).Text = "!";
-                    (validationControl[0] as Label).ForeColor = Color.Red;
-                }
-            }
+        private void OnTextChanged(TextBox sender)
+        {
+            if (sender.Text == "")
+                SetTextBoxStatus(sender, TextBoxState.Invalid);
+            if (IsDirty(sender))
+                SetTextBoxStatus(sender, TextBoxState.Edited);
+            else
+                SetTextBoxStatus(sender, TextBoxState.Valid);
         }
 
         private void FName_KeyDown(object sender, KeyEventArgs e)
@@ -283,13 +217,7 @@ namespace SimplePasswordManager
 
         private void fUsePIN_CheckChanged(object sender, EventArgs e)
         {
-            lUsername.Visible = !fUsePIN.Checked;
-            fUsername.Visible = !fUsePIN.Checked;
-            vUsername.Visible = !fUsePIN.Checked;
-
-            lPassword.Top = fUsePIN.Checked ? lUsername.Top : pwordControlsTop;
-            fPassword.Top = fUsePIN.Checked ? fUsername.Top : pwordControlsTop;
-            vPassword.Top = fUsePIN.Checked ? vUsername.Top : pwordControlsTop;
+            UIConfig("pinmode");
         }
         #endregion Account Fields
 
@@ -300,37 +228,47 @@ namespace SimplePasswordManager
         {
             if (fName.Text == "")
                 SetStatus("Name is required. Cannot save account.", StatusType.Error, false);
-            if (!fUsePIN.Checked && fName.Text == "")
+            else if (!fUsePIN.Checked && fName.Text == "")
                 SetStatus("Username is required. Cannot save account.", StatusType.Error, false);
-            if (fPassword.Text == "")
+            else if (fPassword.Text == "")
                 SetStatus(fUsePIN.Checked ? "PIN" : "Password" + " is required. Cannot save account.", StatusType.Error, false);
-
-            if (gridAcct.SelectedIndex == -1)
-            {
-                accounts.Add(new Account()
-                {
-                    AccountType = fUsePIN.Checked ? AccountType.PIN : AccountType.UsernamePassword,
-                    Name = fName.Text.ToString(),
-                    Username = fUsername.Text.ToString(),
-                    Password = fPassword.Text.ToString()
-                });
-
-                SetStatus("New record added.", StatusType.Success);
-            }
             else
             {
-                var selected = gridAcct.SelectedItem as Account;
-
-                accounts.Update(new Account
+                if (gridAcct.SelectedIndex == -1)
                 {
-                    Id = selected.Id,
-                    AccountType = fUsePIN.Checked ? AccountType.PIN : AccountType.UsernamePassword,
-                    Name = fName.Text.ToString(),
-                    Username = fUsername.Text.ToString(),
-                    Password = fPassword.Text.ToString(),
-                });
+                    var newRecord = new Account()
+                    {
+                        AccountType = fUsePIN.Checked ? AccountType.PIN : AccountType.UsernamePassword,
+                        Name = fName.Text.ToString(),
+                        Username = fUsername.Text.ToString(),
+                        Password = fPassword.Text.ToString()
+                    };
 
-                SetStatus("Record updated", StatusType.Success);
+                    accounts.Add(newRecord);
+
+                    SetStatus("New record added.", StatusType.Success);
+
+                    gridAcct.SelectedIndex = accounts.IndexOf(newRecord);
+
+                    OnTextChanged(fName);
+                    OnTextChanged(fUsername);
+                    OnTextChanged(fPassword);
+                }
+                else
+                {
+                    var selected = gridAcct.SelectedItem as Account;
+
+                    accounts.Update(new Account
+                    {
+                        Id = selected.Id,
+                        AccountType = fUsePIN.Checked ? AccountType.PIN : AccountType.UsernamePassword,
+                        Name = fName.Text.ToString(),
+                        Username = fUsername.Text.ToString(),
+                        Password = fPassword.Text.ToString(),
+                    });
+
+                    SetStatus("Record updated", StatusType.Success);
+                }
             }
         }
 
@@ -393,20 +331,20 @@ namespace SimplePasswordManager
 
         private void togglePasswordToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (Common.Instance.PasswordShowMode == "Toggle")
+            if (Common.PasswordShowMode == "Toggle")
             {
-                fPassword.PasswordChar = fPassword.PasswordChar == Common.Instance.PasswordChar ? '\0' : Common.Instance.PasswordChar;
+                fPassword.PasswordChar = fPassword.PasswordChar == Common.PasswordChar ? '\0' : Common.PasswordChar;
             }
             else
             {
                 if (fPassword.PasswordChar != '\0')
                     fPassword.PasswordChar = '\0';
 
-                t.Interval = Common.Instance.PasswordShowModeDuration;
+                t.Interval = Common.PasswordShowModeDuration;
 
                 t.Tick += (o, ee) =>
                 {
-                    fPassword.PasswordChar = Common.Instance.PasswordChar;
+                    fPassword.PasswordChar = Common.PasswordChar;
                     t.Stop();
                 };
 
@@ -431,7 +369,7 @@ namespace SimplePasswordManager
 
                 t.Tick += (o, ee) =>
                 {
-                    generateFor.PasswordChar = Common.Instance.PasswordChar;
+                    generateFor.PasswordChar = Common.PasswordChar;
 
                     t.Stop();
                 };
@@ -455,84 +393,86 @@ namespace SimplePasswordManager
 
 
         #region Other Methods
+        /// <summary>
+        /// Retrieves settings and reflects them in the application
+        /// </summary>
         private void ReflectSettings()
         {
-            if (settings == null)
-            {
-                settings = new AppSettings();
-                settings.OnSettingsChanged += (o, ee) =>
-                {
-                    // password mask
-                    fPass.PasswordChar = Common.Instance.PasswordChar;
-                    fPassword.PasswordChar = Common.Instance.PasswordChar;
+            // password mask
+            fPass.PasswordChar = Common.PasswordChar;
+            fPassword.PasswordChar = Common.PasswordChar;
 
-                    // password show
-                    if (Common.Instance.PasswordShowMode == "Toggle")
-                        togglePasswordToolStripMenuItem.Text = "Toggle Password";
-                    else
-                        togglePasswordToolStripMenuItem.Text = "Show password for " + Common.Instance.PasswordShowMode;
-                };
-            }
+            // password show
+            if (Common.PasswordShowMode == "Toggle")
+                togglePasswordToolStripMenuItem.Text = "Toggle Password";
+            else
+                togglePasswordToolStripMenuItem.Text = "Show password for " + Common.PasswordShowMode;
         }
 
+        /// <summary>
+        /// Sets the text of the status control
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="type"></param>
+        /// <param name="expires"></param>
+        /// <param name="customLog"></param>
         private void SetStatus(string message, StatusType type = StatusType.Info, bool expires = true, string customLog = "")
         {
             statusControl.SetStatus(message, type, expires);
 
-            if (customLog != "")
-                SessionLogger.Instance.Log(customLog);
+            SessionLogger.Instance.Log((customLog != "") ? customLog : message);
         }
 
-        private bool CheckFieldValue(string field, string value)
+        /// <summary>
+        /// Checks whether the current field is dirty
+        /// </summary>
+        /// <param name="field"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        private bool IsDirty(TextBox field)
         {
             if (accounts.Current != null)
             {
-                if (field == "fName")
-                    return accounts.Current.Name == value;
-                else if (field == "fUsername")
-                    return accounts.Current.Username == value;
-                else if (field == "fPassword")
-                    return accounts.Current.Password == value;
+                if (field.Name == "fName")
+                    return accounts.Current.Name != field.Text;
+                else if (field.Name == "fUsername")
+                    return accounts.Current.Username != field.Text;
+                else if (field.Name == "fPassword")
+                    return accounts.Current.Password != field.Text;
             }
 
             return true;
         }
 
+
+        /// <summary>
+        /// Checks whether the app has a passphrase or not
+        /// </summary>
         private void FirstRun()
         {
-            if (fPass.Text.Length == 0)
+            UIConfig("firstrun");
+
+            if (Common.EncryptedPassphrase == "")
             {
-                fPass.Focus();
-
-                fPass.Enabled = true;
-
-                groupAccountDetails.Enabled = false;
-                gridAcct.Enabled = false;
-
-                if (EncryptedPassphrase == "")
-                {
-                    SetStatus("Please enter a new passphrase", StatusType.Info, false, "First Run. Waiting for passphrase...");
-                    btnValidate.Text = "Save";
-                }
-                else
-                {
-                    SetStatus("Please enter your passphrase", StatusType.Info, false, "Waiting for passphrase...");
-                }
+                SetStatus("Please enter a new passphrase", StatusType.Info, false, "First Run. Waiting for passphrase...");
+                btnValidate.Text = "Save";
+            }
+            else if (fPass.Text.Length == 0)
+            {
+                SetStatus("Please enter your passphrase", StatusType.Info, false, "Waiting for passphrase...");
             }
         }
 
+        /// <summary>
+        /// Resets all data
+        /// </summary>
         private void Reset()
         {
             SetStatus("Erasing all data...");
 
             accounts.Reset();
-            EncryptedPassphrase = "";
-            Properties.Settings.Default.iv = Guid.NewGuid().ToString().Replace("-", "").Substring(0, 16);
 
-            fPass.Text = "";
-            fName.Text = "";
-            fUsername.Text = "";
-            fPassword.Text = "";
+            Common.Reset();
 
             SetStatus("Data has been reset.");
 
@@ -546,15 +486,100 @@ namespace SimplePasswordManager
                 sv.DefaultExt = "spm";
                 sv.Filter = "Simple Password Manager File (*.spm)|*.spm";
                 sv.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                sv.FileName = Common.Instance.FileExportFilename.Split('.')[0];
+                sv.FileName = Common.FileExportFilename.Split('.')[0];
+
                 if (sv.ShowDialog() == DialogResult.OK)
+                    accounts.SaveExport(Common.EncryptedPassphrase, sv.FileName, encrypted);
+            }
+        }
+
+        private void UIConfig(string state = "firstrun")
+        {
+            if (state == "pinmode")
+            {
+                fUsername.Text = "";
+
+                lUsername.Visible = !fUsePIN.Checked;
+                fUsername.Visible = !fUsePIN.Checked;
+                vUsername.Visible = !fUsePIN.Checked;
+
+                lPassword.Top = fUsePIN.Checked ? lUsername.Top : pwordControlsTop;
+                fPassword.Top = fUsePIN.Checked ? fUsername.Top : pwordControlsTop;
+                vPassword.Top = fUsePIN.Checked ? vUsername.Top : pwordControlsTop;
+            }
+            else if (state == "valid")
+            {
+                fPass.Enabled = false;
+
+                if (gridAcct.Items.Count > 0)
                 {
-                    accounts.SaveExport(EncryptedPassphrase, sv.FileName, encrypted);
+                    gridAcct.SelectedIndex = 0;
+                    gridAcct.SelectedItem = accounts[0];
+                    gridAcct.Focus();
+                }
+                else
+                {
+                    fName.Focus();
+                }
+
+                btnValidate.Enabled = false;
+
+                groupAccountDetails.Enabled = true;
+                groupBox1.Enabled = true;
+
+                exportFileToolStripMenuItem.Enabled = true;
+                editToolStripMenuItem.Enabled = true;
+            }
+            else if (state == "lock")
+            {
+                groupAccountDetails.Enabled = false;
+                groupBox1.Enabled = false;
+            }
+            else
+            {
+                fPass.Text = "";
+                fName.Text = "";
+                fUsername.Text = "";
+                fPassword.Text = "";
+
+                fPass.Enabled = true;
+
+                fPass.Focus();
+
+                btnValidate.Enabled = true;
+
+                groupAccountDetails.Enabled = false;
+                groupBox1.Enabled = false;
+
+                exportFileToolStripMenuItem.Enabled = false;
+                editToolStripMenuItem.Enabled = false;
+            }
+        }
+
+        private void SetTextBoxStatus(TextBox field, TextBoxState state)
+        {
+            var controlName = field.Name;
+            var validationControl = Controls.Find(controlName.Replace('f', 'v'), true);
+
+            if (validationControl != null && validationControl.Length > 0)
+            {
+                if (state == TextBoxState.Valid)
+                {
+                    (validationControl[0] as Label).Text = "✔";
+                    (validationControl[0] as Label).ForeColor = Color.Green;
+                }
+                else if (state == TextBoxState.Edited)
+                {
+                    (validationControl[0] as Label).Text = "🖉";
+                    (validationControl[0] as Label).ForeColor = Color.Orange;
+                }
+                else if (state == TextBoxState.Invalid)
+                {
+                    (validationControl[0] as Label).Text = "!";
+                    (validationControl[0] as Label).ForeColor = Color.Red;
                 }
             }
         }
         #endregion
-
-
     }
 }
